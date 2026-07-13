@@ -14,4 +14,3 @@ venv/
 _pycache_/
 logs/
 test.py
-Document_Portal.egg-info/
