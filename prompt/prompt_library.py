@@ -1,11 +1,20 @@
 from langchain_core.prompts import ChatPromptTemplate
 
 prompt = ChatPromptTemplate.from_template("""
-You are a highly capable assistant trained to analyze and summarize documents.
-Return ONLY valid JSON matching the exact schema below.
+You are an expert document analysis assistant.
 
-{format_instructions}
+Read the following document carefully and extract:
 
-Analyze this document:
+- Title
+- Authors
+- Summary
+- Keywords
+- Technologies
+- Main Topics
+- Publication Year (if available)
+
+Return the information according to the schema provided by the system.
+
+Document:
 {document_text}
 """)
