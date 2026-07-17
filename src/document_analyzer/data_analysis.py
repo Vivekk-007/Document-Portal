@@ -4,8 +4,8 @@ from utils.model_loader import ModelLoader
 from logger.custom_logger import CustomLogger
 from exception.custom_exception import DocumentPortalException
 
-from model.models import Metadate
-from prompt.prompt_library import prompt
+from model.models import Metadata
+from prompt.prompt_library import PROMPT_REGISTRY
 
 
 class DocumentAnalyzer:
@@ -20,8 +20,8 @@ class DocumentAnalyzer:
             self.loader = ModelLoader()
             self.llm = self.loader.load_llm()
             # Structured Output
-            self.structured_llm = self.llm.with_structured_output(Metadate)
-            self.prompt = prompt
+            self.structured_llm = self.llm.with_structured_output(Metadata)
+            self.prompt = PROMPT_REGISTRY["document_analysis"]
             self.log.info("DocumentAnalyzer initialized successfully.")
 
         except Exception as e:
