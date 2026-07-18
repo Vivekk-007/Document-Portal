@@ -1,5 +1,6 @@
 from langchain_core.prompts import ChatPromptTemplate
 
+# Prompt for document analysis
 document_analysis_prompt = ChatPromptTemplate.from_template("""
 You are an expert document analysis assistant.
 
@@ -18,6 +19,7 @@ Return the information according to the schema provided by the system.
 Document:
 {document_text}
 """)
+
 # Prompt for document comparison
 document_comparison_prompt = ChatPromptTemplate.from_template("""
 You will be provided with content from two PDFs. Your tasks are as follows:
@@ -36,4 +38,7 @@ Your response should follow this format:
 {format_instruction}
 """)
 
-PROMPT_REGISTRY={"document_analysis": document_analysis_prompt,"document_comparision":document_comparison_prompt}
+PROMPT_REGISTRY = {
+    "document_analysis": document_analysis_prompt,
+    "document_comparison": document_comparison_prompt,   # fixed typo: was "document_comparision"
+}
