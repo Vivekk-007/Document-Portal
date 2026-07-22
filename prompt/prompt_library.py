@@ -1,10 +1,13 @@
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
-# Prompt for document analysis
+# ==========================================================
+# Document Analysis Prompt
+# ==========================================================
+
 document_analysis_prompt = ChatPromptTemplate.from_template("""
 You are an expert document analysis assistant.
 
-Read the following document carefully and extract:
+Analyze the following document and extract:
 
 - Title
 - Authors
@@ -14,31 +17,101 @@ Read the following document carefully and extract:
 - Main Topics
 - Publication Year (if available)
 
-Return the information according to the schema provided by the system.
+Return the information according to the required schema.
 
 Document:
 {document_text}
 """)
 
-# Prompt for document comparison
+# ==========================================================
+# Document Comparison Prompt
+# ==========================================================
+
 document_comparison_prompt = ChatPromptTemplate.from_template("""
-You will be provided with content from two PDFs. Your tasks are as follows:
+You are an expert document comparison assistant.
 
-1. Compare the content in two PDFs
-2. Identify the difference in PDF and note down the page number 
-3. The output you provide must be page wise comparison content 
-4. If any page do not have any change, mention as 'NO CHANGE' 
+Compare the following two documents.
 
-Input documents:
+Tasks:
+1. Compare both documents page by page.
+2. Identify all differences.
+3. Mention the page number for each difference.
+4. If a page has no differences, write "NO CHANGE".
+5. Keep the output structured and easy to read.
+
+Documents:
 
 {combined_docs}
 
-Your response should follow this format:
+Return your answer using this format:
 
 {format_instruction}
 """)
 
+# ==========================================================
+# Contextualize Question Prompt
+# ==========================================================
+
+contextualize_question_prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            """
+Given the chat history and the latest user question,
+rewrite the latest question so it can be understood
+without the chat history.
+
+Instructions:
+- Do NOT answer the question.
+- Preserve the original meaning.
+- If the question is already standalone,
+  return it unchanged.
+- Return ONLY the rewritten question.
+            """,
+        ),
+        MessagesPlaceholder(variable_name="chat_history"),
+        ("human", "{input}"),
+    ]
+)
+
+# ==========================================================
+# Context QA Prompt
+# ==========================================================
+
+context_qa_prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            """
+You are an intelligent document question-answering assistant.
+
+Answer ONLY using the provided context.
+
+Instructions:
+- Use only the retrieved context.
+- If the answer is not found, say:
+  "I don't know based on the provided document."
+- Do not hallucinate.
+- Keep answers accurate and concise.
+- Use bullet points whenever appropriate.
+
+Retrieved Context:
+
+{context}
+            """,
+        ),
+        MessagesPlaceholder(variable_name="chat_history"),
+        ("human", "{input}"),
+    ]
+)
+
+# ==========================================================
+# Registry
+# ==========================================================
+
 PROMPT_REGISTRY = {
     "document_analysis": document_analysis_prompt,
-    "document_comparison": document_comparison_prompt,   # fixed typo: was "document_comparision"
+    "document_comparison": document_comparison_prompt,
+    "contextualize_question": contextualize_question_prompt,
+    "context_qa": context_qa_prompt,
 }
