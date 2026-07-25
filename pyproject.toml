@@ -39,4 +39,5 @@ dependencies = [
     "executing==2.2.0",
     "pure-eval==0.2.3",
     "streamlit>=1.60.0",
+    "docx2txt>=0.9",
 ]
