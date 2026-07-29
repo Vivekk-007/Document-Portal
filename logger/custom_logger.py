@@ -44,3 +44,5 @@ class CustomLogger:
         )
 
         return structlog.get_logger(logger_name)
+    
+GLOBAL_LOGGER = CustomLogger().get_logger()
