@@ -40,4 +40,7 @@ dependencies = [
     "pure-eval==0.2.3",
     "streamlit>=1.60.0",
     "docx2txt>=0.9",
+    "fastapi==0.116.1",
+    "pytest==8.4.1",
+    "pylint==3.3.7",
 ]
