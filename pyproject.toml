@@ -45,4 +45,5 @@ dependencies = [
     "pylint==3.3.7",
     "uvicorn>=0.51.0",
     "python-multipart>=0.0.32",
+    "google-genai>=2.16.0",
 ]
