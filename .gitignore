@@ -16,3 +16,4 @@ logs/
 test.py
 faiss_index/
 *.pyc
+data/
