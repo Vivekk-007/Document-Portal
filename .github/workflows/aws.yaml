@@ -1,9 +1,10 @@
 name: Deploy to Amazon ECS
 
 on:
-  push:
-    branches:
-      - master
+  workflow_run:
+    workflows: ["Document Portal CI"]
+    types:
+      - completed
 
 env:
   AWS_REGION: us-east-1
@@ -18,30 +19,25 @@ permissions:
   contents: read
 
 jobs:
-  deploy:
-    name: Build and Deploy
+  check-status:
     runs-on: ubuntu-latest
-    environment: production
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'master'
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - run: echo "CI Passed. Starting deployment..."
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+  build-and-push:
+    name: Build & Push Docker Image
+    needs: check-status
+    runs-on: ubuntu-latest
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v3
+    outputs:
+      image: ${{ steps.build.outputs.image }}
 
-      - name: Install Dependencies
-        run: |
-          uv sync --frozen
-
-      - name: Verify FastAPI App
-        run: |
-          uv run python -c "from api.main import app; print('FastAPI app imported successfully')"
+    steps:
+      - uses: actions/checkout@v4
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -54,32 +50,48 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build, Tag and Push Docker Image
-        id: build-image
+      - name: Build and Push Docker Image
+        id: build
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
+
         run: |
           IMAGE_URI=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker build -t $IMAGE_URI .
           docker push $IMAGE_URI
           echo "image=$IMAGE_URI" >> $GITHUB_OUTPUT
 
+  deploy:
+    name: Deploy to ECS
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
       - name: Render ECS Task Definition
-        id: task-def
+        id: task-definition
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
           container-name: ${{ env.CONTAINER_NAME }}
-          image: ${{ steps.build-image.outputs.image }}
+          image: ${{ needs.build-and-push.outputs.image }}
 
-      - name: Deploy to Amazon ECS
+      - name: Deploy to ECS Fargate
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
         with:
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          task-definition: ${{ steps.task-definition.outputs.task-definition }}
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
 
-      - name: Deployment Successful
-        run: echo "Deployment completed successfully."
+      - name: Deployment Complete
+        run: echo "Successfully deployed to ECS Fargate."
