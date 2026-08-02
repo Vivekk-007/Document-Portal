@@ -30,16 +30,8 @@
       ],
       "secrets": [
         {
-          "name": "GROQ_API_KEY",
-          "valueFrom": "arn:aws:secretsmanager:us-east-1:926000797438:secret:apikey-XqdfxW:GROQ_API_KEY"
-        },
-        {
-          "name": "GOOGLE_API_KEY",
-          "valueFrom": "arn:aws:secretsmanager:us-east-1:926000797438:secret:apikey-XqdfxW:GOOGLE_API_KEY"
-        },
-        {
-          "name": "HUGGINGFACEHUB_API_TOKEN",
-          "valueFrom": "arn:aws:secretsmanager:us-east-1:926000797438:secret:apikey-XqdfxW:HUGGINGFACEHUB_API_TOKEN"
+          "name": "API_KEY",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:926000797438:secret:apikey-XqdfxW"
         }
       ],
       "logConfiguration": {
