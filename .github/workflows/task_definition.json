@@ -1,7 +1,7 @@
 {
   "family": "documentportaltd",
   "networkMode": "awsvpc",
-  "executionRoleArn": "arn:aws:iam::685057748560:role/ecsTaskExecutionRole",
+  "executionRoleArn": "arn:aws:iam::926000797438:role/ecsTaskExecutionRole",
   "requiresCompatibilities": ["FARGATE"],
   "cpu": "1024",
   "memory": "8192",
@@ -22,26 +22,22 @@
       ],
       "environment": [
         {
-          "name": "LANGCHAIN_PROJECT",
-          "value": "DOCUMENT PORTAL"
+          "name": "ENV",
+          "value": "production"
         }
       ],
       "secrets": [
         {
           "name": "GROQ_API_KEY",
-          "valueFrom": "arn:aws:secretsmanager:us-east-1:926000797438:secret:GROQ_API_KEY"
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:926000797438:secret:apikey-XqdfxW:GROQ_API_KEY"
         },
         {
-          "name": "HF_TOKEN",
-          "valueFrom": "arn:aws:secretsmanager:us-east-1:926000797438:secret:HF_TOKEN"
+          "name": "HUGGINGFACEHUB_API_TOKEN",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:926000797438:secret:apikey-XqdfxW:HUGGINGFACEHUB_API_TOKEN"
         },
         {
           "name": "GOOGLE_API_KEY",
-          "valueFrom": "arn:aws:secretsmanager:us-east-1:685057748560:secret:GOOGLE_API_KEY"
-        },
-        {
-          "name": "LANGCHAIN_API_KEY",
-          "valueFrom": "arn:aws:secretsmanager:us-east-1:685057748560:secret:LANGCHAIN_API_KEY"
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:926000797438:secret:apikey-XqdfxW:GOOGLE_API_KEY"
         }
       ],
       "logConfiguration": {
@@ -50,7 +46,7 @@
           "awslogs-group": "/ecs/documentportaltd",
           "awslogs-region": "us-east-1",
           "awslogs-stream-prefix": "ecs",
-          "awslogs-create-group": "false",
+          "awslogs-create-group": "true",
           "mode": "non-blocking",
           "max-buffer-size": "25m"
         }

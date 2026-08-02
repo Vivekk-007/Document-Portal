@@ -14,7 +14,11 @@ log = CustomLogger().get_logger(__name__)
 
 class ModelLoader:
     def __init__(self):
-        load_dotenv()  # Load environment variables from .env file
+        if os.getenv("ENV", "local").lower() != "production":
+            load_dotenv()
+            log.info("Running in LOCAL mode: .env file loaded")
+        else:
+            log.info("Running in PRODUCTION mode: .env not loaded")  # Load environment variables from .env file
         self._validate_env()
         self.config = load_config()  # Load configuration from YAML file
 
